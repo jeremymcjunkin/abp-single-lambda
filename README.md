@@ -15,7 +15,7 @@ This example sets up a CI/CD for a single lambda, fronted by CloudFront and API 
 
 1. Run the setup script from your local git repo dir: 
     ```
-    wget -q https://raw.githubusercontent.com/rynop/abp-single-lambda/master/bin/setup.sh; bash setup.sh; rm setup.sh
+    wget -q https://raw.githubusercontent.com/jeremymcjunkin/abp-single-lambda/master/bin/setup.sh; bash setup.sh; rm setup.sh
     ```
 
     This:
