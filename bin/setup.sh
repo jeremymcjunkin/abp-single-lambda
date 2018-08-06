@@ -60,7 +60,7 @@ declare -a arr=("master" "${favLang}")
 awsCliParams="--region ${nestedStacksS3BucketRegion} --profile ${awsCliProfile}"
 
 for branch in "${arr[@]}"; do
-    url="https://github.com/rynop/abp-single-lambda/archive/${branch}.zip"
+    url="https://github.com/jeremymcjunkin/abp-single-lambda/archive/${branch}.zip"
     wget -qO- "${url}" | bsdtar -xf-
     if [ $? -ne 0 ] ; then
         abort "Error downloading ${url}"
@@ -106,6 +106,6 @@ $githubRepoName--$gitBranch--[eyecatcher]--cicd
 LambdaName Parameter: $lambdaName
 S3BucketForLambdaPackageZips: $nestedStacksS3Bucket
 
-See https://github.com/rynop/abp-single-lambda/tree/$favLang for language specific CI/CD parameters
+See https://github.com/jeremymcjunkin/abp-single-lambda/tree/$favLang for language specific CI/CD parameters
 
 TheMsg
