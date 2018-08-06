@@ -60,35 +60,27 @@ declare -a arr=("master" "${favLang}")
 awsCliParams="--region ${nestedStacksS3BucketRegion} --profile ${awsCliProfile}"
 
 for branch in "${arr[@]}"; do
-    url="https://github.com/rynop/abp-single-lambda-api/archive/${branch}.zip"
+    url="https://github.com/rynop/abp-single-lambda/archive/${branch}.zip"
     wget -qO- "${url}" | bsdtar -xf-
     if [ $? -ne 0 ] ; then
         abort "Error downloading ${url}"
     fi
     
     if  [ "$branch" == "master" ]; then
-        mv ./abp-single-lambda-api-${branch}/aws .
+        mv ./abp-single-lambda-${branch}/aws .
     else
-        mv ./abp-single-lambda-api-${branch}/* .
+        mv ./abp-single-lambda-${branch}/* .
     fi
-    rm -r abp-single-lambda-api-${branch}
+    rm -r abp-single-lambda-${branch}
 done
 
 log 'Download code' 'done'
 
-declare -a stackPaths=("apig/single-lambda-proxy-with-CORS.yaml" "cloudfront/single-apig-custom-domain.yaml")
-
-for stackPath in "${stackPaths[@]}"; do
-    S3VER=$(aws ${awsCliParams} s3api list-object-versions --bucket ${nestedStacksS3Bucket} --prefix nested-stacks/${stackPath} --query 'Versions[?IsLatest].[VersionId]' --output text)
-    test -z "${S3VER}" && abort "Unable to find nested stack version at s3://${nestedStacksS3Bucket}/nested-stacks/${stackPath} See https://github.com/rynop/aws-blueprint/tree/master/nested-stacks"
-    sed -i "s|${stackPath}?versionid=YourS3VersionId|${stackPath}?versionid=$S3VER|" aws/cloudformation/cf-apig-single-lambda-resources.yaml
-done
-
-sed -i "s|us-east-1--aws-blueprint.yourdomain.com|$nestedStacksS3Bucket|" aws/cloudformation/cf-apig-single-lambda-resources.yaml
-sed -i "s|YourLambdaNameHere|$lambdaName|" aws/cloudformation/cf-apig-single-lambda-resources.yaml
+sed -i "s|us-east-1--aws-blueprint.yourdomain.com|$nestedStacksS3Bucket|" aws/cloudformation/cf-single-lambda-resources.yaml
+sed -i "s|YourLambdaNameHere|$lambdaName|" aws/cloudformation/cf-single-lambda-resources.yaml
 log 'Set params in resources yaml' 'done'
 
-grep YourS3VersionId aws/cloudformation/cf-apig-single-lambda-resources.yaml
+grep YourS3VersionId aws/cloudformation/cf-single-lambda-resources.yaml
 test $? -eq 0 && abort "Unable to set your nested-stack template S3 versions"
 
 cat <<TheMsg
@@ -114,6 +106,6 @@ $githubRepoName--$gitBranch--[eyecatcher]--cicd
 LambdaName Parameter: $lambdaName
 S3BucketForLambdaPackageZips: $nestedStacksS3Bucket
 
-See https://github.com/rynop/abp-single-lambda-api/tree/$favLang for language specific CI/CD parameters
+See https://github.com/rynop/abp-single-lambda/tree/$favLang for language specific CI/CD parameters
 
 TheMsg
